@@ -1,11 +1,11 @@
 # Brewline
 
-A small coffee-shop app, wired up with [flutterware](https://github.com/xvrh/flutterware).
+A small coffee-shop app, wired up with [flutterware](https://github.com/flutterware/flutterware).
 It exists to be cloned: one command opens the studio and every tool below is
 already pointed at something real.
 
 ```sh
-git clone https://github.com/xvrh/flutterware_example
+git clone https://github.com/flutterware/flutterware_example
 cd flutterware_example
 dart run flutterware
 ```
