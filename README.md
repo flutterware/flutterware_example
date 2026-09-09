@@ -5,8 +5,8 @@ It exists to be cloned: one command opens the studio and every tool below is
 already pointed at something real.
 
 ```sh
-git clone https://github.com/xvrh/brewline
-cd brewline
+git clone https://github.com/xvrh/flutterware_example
+cd flutterware_example
 dart run flutterware
 ```
 
