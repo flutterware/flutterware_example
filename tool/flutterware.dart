@@ -35,6 +35,24 @@ void main() => Flutterware.configure((fw) {
     ),
   );
 
+  // The store listing: which stores, which locales, and the widget that frames
+  // each shot. It takes no arguments — the declaration *is* the configuration,
+  // and `fw run store export` writes the tree `fastlane deliver` reads.
+  fw.use(
+    StoreShots(
+      apps: [
+        StoreShotsApp(
+          app,
+          file: 'test/scenarios/shop_test.dart',
+          frame: 'lib/store_frame.dart',
+          listings: [
+            Listing.appStore(locales: {'en': 'en-US', 'fr': 'fr-FR'}),
+          ],
+        ),
+      ],
+    ),
+  );
+
   // Where the words are — the one thing a run cannot work out for itself.
   fw.use(
     Translations(
