@@ -10,10 +10,8 @@ import 'package:flutter/widgets.dart';
 /// every read goes through [read]. That one funnel is the whole integration
 /// surface: hand it a wrapper and the words a screen renders can be traced
 /// back to the keys they came from, by object identity, with nothing inserted
-/// into the text and no pixel moved. See
-/// `docs/superpowers/specs/2026-08-18-translation-index-design.md`, and
-/// `test/scenarios/mobile/flutter_test_config.dart` for the two lines that
-/// wire it.
+/// into the text and no pixel moved. The two lines that wire it are in
+/// `test/scenarios/mobile/flutter_test_config.dart`.
 ///
 /// Deliberately hand-rolled rather than codegen: a demo should show localized
 /// scenarios without dragging in a pipeline, and a hand-rolled catalog is
@@ -42,6 +40,12 @@ class ShopStrings {
   /// is not what renders; this hands the key back at the one place that still
   /// knows it. A scenario sets it to `indexExpansions('shop')`.
   static String Function(String key, String expanded)? wrapExpanded;
+
+  /// The package the strings are bundled under when the shop's screens are
+  /// compiled into another app — flutterware's studio does that for its web
+  /// demo — or null when this is the app. An asset of a dependency is
+  /// addressed as `packages/<name>/…`, and only the host knows which it is.
+  static String? assetPackage;
 
   static const LocalizationsDelegate<ShopStrings> delegate = _Delegate();
 
@@ -78,6 +82,29 @@ class ShopStrings {
   String get emptyCart => read('emptyCart');
   String get onItsWay => read('onItsWay');
   String get backToMenu => read('backToMenu');
+  String get perkOrderAhead => read('perkOrderAhead');
+  String get perkSkipQueue => read('perkSkipQueue');
+  String get perkReady => read('perkReady');
+  String get pickupFrom => read('pickupFrom');
+  String get seasonalLabel => read('seasonalLabel');
+  String get categoryAll => read('categoryAll');
+  String get categoryCoffee => read('categoryCoffee');
+  String get categoryTea => read('categoryTea');
+  String get categoryIced => read('categoryIced');
+  String get milk => read('milk');
+  String get milkWhole => read('milkWhole');
+  String get milkOat => read('milkOat');
+  String get milkAlmond => read('milkAlmond');
+  String get extraShot => read('extraShot');
+  String get pickup => read('pickup');
+  String get pickupAsap => read('pickupAsap');
+  String get pickupIn15 => read('pickupIn15');
+  String get pickupIn30 => read('pickupIn30');
+  String get orderLabel => read('orderLabel');
+  String get counter => read('counter');
+  String get stepReceived => read('stepReceived');
+  String get stepBrewing => read('stepBrewing');
+  String get stepReady => read('stepReady');
 
   /// The string that goes through a placeholder, and still resolves.
   ///
@@ -95,6 +122,10 @@ class ShopStrings {
   /// see there for the other half.
   String thanks(String name) =>
       _expand('thanks', read('thanks').replaceAll('{name}', name));
+
+  /// A count of minutes, through a placeholder like [thanks].
+  String readyIn(int minutes) =>
+      _expand('readyIn', read('readyIn').replaceAll('{minutes}', '$minutes'));
 
   String _expand(String key, String expanded) =>
       wrapExpanded?.call(key, expanded) ?? expanded;
@@ -130,7 +161,13 @@ class _Delegate extends LocalizationsDelegate<ShopStrings> {
 
   static Future<Map<String, String>> _read(String locale) async {
     if (_cache[locale] case var cached?) return cached;
-    var source = await rootBundle.loadString('assets/i18n/$locale.json');
+    var prefix = switch (ShopStrings.assetPackage) {
+      var package? => 'packages/$package/',
+      null => '',
+    };
+    var source = await rootBundle.loadString(
+      '${prefix}assets/i18n/$locale.json',
+    );
     return _cache[locale] = {
       for (var entry in (jsonDecode(source) as Map).entries)
         if (entry.value is String) '${entry.key}': entry.value as String,
